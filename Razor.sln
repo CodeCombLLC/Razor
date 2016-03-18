@@ -3,8 +3,39 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CD5B8002-E892-402A-9B1E-3725032AA36F}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Razor", "src\Razor\Razor.xproj", "{B08784B9-F6C5-4C97-9787-1E7108C23B75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FD269C85-649A-4473-8EA6-84EBA74029ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D3B745D6-32DC-4658-BEE5-8476A0919CF7}"
+	ProjectSection(SolutionItems) = preProject
+		\\Mac\Home\Projects\Razor\tests\global.json = \\Mac\Home\Projects\Razor\tests\global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Razor.PerformanceTests", "test\Razor.PerformanceTests\Razor.PerformanceTests.xproj", "{50AAD1AC-BC8B-45F2-B430-E7EBE90494E4}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B08784B9-F6C5-4C97-9787-1E7108C23B75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B08784B9-F6C5-4C97-9787-1E7108C23B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B08784B9-F6C5-4C97-9787-1E7108C23B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B08784B9-F6C5-4C97-9787-1E7108C23B75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50AAD1AC-BC8B-45F2-B430-E7EBE90494E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50AAD1AC-BC8B-45F2-B430-E7EBE90494E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50AAD1AC-BC8B-45F2-B430-E7EBE90494E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50AAD1AC-BC8B-45F2-B430-E7EBE90494E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B08784B9-F6C5-4C97-9787-1E7108C23B75} = {CD5B8002-E892-402A-9B1E-3725032AA36F}
+		{50AAD1AC-BC8B-45F2-B430-E7EBE90494E4} = {FD269C85-649A-4473-8EA6-84EBA74029ED}
 	EndGlobalSection
 EndGlobal
