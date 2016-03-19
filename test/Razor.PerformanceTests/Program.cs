@@ -10,25 +10,17 @@ namespace Razor.PerformanceTests
     {
         private static void dfs(Dom root)
         {
-            Console.WriteLine(root.Type + " " + root.Begin);
-            
             foreach (var child in root.Children)
             {
-                Console.WriteLine(" ___ ");
                 dfs(child);
-                Console.WriteLine(" ___ ");
             }
-            Console.WriteLine(root.Type + " " + root.End);
         }
 
         public static void Main(string[] args)
         {
-            var root = Analyze.AnalyzeDom(@"<html>
-@if (2 > 1)
-{
-    <a>123</a>
-}
-</html>");
+            var path = Console.ReadLine();
+            var code = System.IO.File.ReadAllText(path);
+            var root = Analyze.AnalyzeDom(code);
             Console.ReadKey();
         }
     }

@@ -9,6 +9,11 @@ namespace Razor
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public static class Analyze
     {
+        public static string substring(this string self, int begin, int end)
+        {
+            return self.Substring(begin, end - begin);
+        }
+
         /// <summary>
         /// 判断一个字符串是否可以符合标签起名的标准
         /// </summary>
@@ -19,7 +24,7 @@ namespace Razor
             if (str.Length == 0)
                 return false;
             foreach (var x in str)
-                if (!char.IsLetter(x))
+                if (!char.IsLetter(x) && !char.IsWhiteSpace(x))
                     return false;
             return true;
         }
@@ -54,7 +59,7 @@ namespace Razor
             var hasFailedMatching = false;
             var innerString = false;
             var escapeChar = false;
-            char start = '\0';
+            var start = '\0';
             for (var index = 0; index < code.Length && !hasFailedMatching; ++index)
             {
                 if (allowString)
@@ -191,7 +196,7 @@ namespace Razor
                     if (code[tempIndex] == '(')
                     {
                         nextIndex = pos[index];
-                        razorList.Add(code.Substring(index, nextIndex + 1));
+                        razorList.Add(code.substring(index, nextIndex + 1));
                     }
                     else
                     {
@@ -240,7 +245,7 @@ namespace Razor
                                     nextIndex = pos[tempIndex];
                                 }
                             }
-                            razorList.Add(code.Substring(index, nextIndex + 1));
+                            razorList.Add(code.substring(index, nextIndex + 1));
                         }
                         else
                         {
@@ -265,20 +270,20 @@ namespace Razor
                 end = pos[sta]; // '<' at sta, '>' at end
                 if (Code[sta] != '<' || Code[end] != '>')
                     throw new Exception();
-                if (sta + 2 < end && " /".Equals(Code.Substring(end - 2, end)) == true // match <someTag />
-                || sta + 5 < end && "!--".Equals(Code.Substring(sta + 1, sta + 4)) == true && "--".Equals(Code.Substring(end - 2, end)) == true)
+                if (sta + 2 < end && " /".Equals(Code.substring(end - 2, end)) == true // match <someTag />
+                || sta + 5 < end && "!--".Equals(Code.substring(sta + 1, sta + 4)) == true && "--".Equals(Code.substring(end - 2, end)) == true)
                 { // match <!--...--> (may ignored)
-                    now.Begin = Code.Substring(sta, end + 1);
+                    now.Begin = Code.substring(sta, end + 1);
                 }
                 else {
                     // may match <someTag>
                     int tempIndex = Code.IndexOf(' ', sta + 2); // fetch someTag : <someTag> or <someTag ...>
-                    var someTag = (tempIndex != -1 && tempIndex < end) ? Code.Substring(sta + 1, tempIndex) : Code.Substring(sta + 1, end);
+                    var someTag = (tempIndex != -1 && tempIndex < end) ? Code.substring(sta + 1, tempIndex) : Code.substring(sta + 1, end);
                     if (IsTag(someTag) == false)
                     {
                         throw new Exception("Syntax Error.");
                     }
-                    now.Begin = Code.Substring(sta, end + 1); // <someTag...>
+                    now.Begin = Code.substring(sta, end + 1); // <someTag...>
                                                                 // then try to find child and </someTag>
                     for (int index = end + 1, nextIndex = -1; index < Code.Length; index = nextIndex + 1)
                     { // find now.child
@@ -288,12 +293,12 @@ namespace Razor
                             if (index + 1 < Code.Length && Code[index + 1]== '/')
                             { // match </someTag>
                                 tempIndex = pos[index]; // fetch someTag and check it
-                                if (tempIndex < 0 || someTag.Equals(Code.Substring(index + 2, tempIndex)) == false)
+                                if (tempIndex < 0 || someTag.Equals(Code.substring(index + 2, tempIndex)) == false)
                                 {
                                     throw new Exception("Syntax Error.");
                                 }
                                 end = tempIndex;
-                                now.End = Code.Substring(index, end + 1); // <someTag ...> ... </someTag>
+                                now.End = Code.substring(index, end + 1); // <someTag ...> ... </someTag>
                                 break;
                             }
                             else { // match HTML child
@@ -324,12 +329,12 @@ namespace Razor
                         throw new Exception("Syntax Error.");
                     }
                     ++end;
-                    now.Begin = Code.Substring(sta, end + 1);  // @*...*@ (may ignored)
+                    now.Begin = Code.substring(sta, end + 1);  // @*...*@ (may ignored)
                 }
                 else if (flag == false && Code[sta + 1] == '@')
                 { // rule 3 : @@
                     end = sta + 1;
-                    now.Begin = Code.Substring(sta, end + 1); // @@
+                    now.Begin = Code.substring(sta, end + 1); // @@
                 }
                 else { // other rules
                     if (flag == true)
@@ -360,7 +365,7 @@ namespace Razor
                                 break;
                             }
                         }
-                        String variable = Code.Substring(sta + 1, end + 1);
+                        String variable = Code.substring(sta + 1, end + 1);
                         if ("if".Equals(variable) == true || "else".Equals(variable) == true || "for".Equals(variable) == true || "foreach".Equals(variable) || "while".Equals(variable) == true || "do".Equals(variable) == true)
                         {
                             // rule 5 : for() {...} or if(expression) {...} else {...}
@@ -374,7 +379,7 @@ namespace Razor
                                 throw new Exception("Syntax Error.");
                             }
                             int rightIndex = pos[leftIndex];
-                            now.Begin = Code.Substring(tempIndex, leftIndex + 1);
+                            now.Begin = Code.substring(tempIndex, leftIndex + 1);
                             for (int index = leftIndex + 1, nextIndex; index < rightIndex; index = nextIndex + 1)
                             {
                                 tempChar = Code[index];
@@ -394,7 +399,7 @@ namespace Razor
                             { // check "else" and "else if"
                                 isIfElse = true;
                                 end = rightIndex;
-                                now.End = Code.Substring(rightIndex, end + 1);
+                                now.End = Code.substring(rightIndex, end + 1);
                                 root.AppendChild(now);
                                 // prestore if-else-if in nowList.children
                                 for (int index = rightIndex + 1; index < Code.Length; index = rightIndex + 1)
@@ -435,7 +440,7 @@ namespace Razor
                                                 break;
                                             }
                                         }
-                                        if (tempIndex2 + 1 >= leftIndex || "if".Equals(Code.Substring(tempIndex2, tempIndex + 2)) == false)
+                                        if (tempIndex2 + 1 >= leftIndex || "if".Equals(Code.substring(tempIndex2, tempIndex + 2)) == false)
                                         {
                                             // not "else if", end the condition
                                             end = rightIndex;
@@ -459,11 +464,11 @@ namespace Razor
                                     throw new Exception("Syntax Error.");
                                 }
                                 end = pos[tempIndex];
-                                now.End = Code.Substring(rightIndex, end + 1);
+                                now.End = Code.substring(rightIndex, end + 1);
                             }
                             else {
                                 end = rightIndex;
-                                now.End = Code.Substring(rightIndex, end + 1);
+                                now.End = Code.substring(rightIndex, end + 1);
                             }
                         }
                         else {
@@ -508,7 +513,7 @@ namespace Razor
                                     { // object.method( {...} ) like loop
                                         leftIndex = tempIndex;
                                         rightIndex = pos[tempIndex];
-                                        now.Begin = Code.Substring(sta + 1, leftIndex + 1);
+                                        now.Begin = Code.substring(sta + 1, leftIndex + 1);
                                         for (int index = leftIndex + 1, nextIndex = -1; index < rightIndex; index = nextIndex + 1)
                                         {
                                             tempChar = Code[index];
@@ -524,18 +529,18 @@ namespace Razor
                                                 nextIndex = AnalyzeDom(now, Code, index, pos, CodeType.Razor, true);
                                             }
                                         }
-                                        now.End = Code.Substring(rightIndex, end + 1);
+                                        now.End = Code.substring(rightIndex, end + 1);
                                     }
                                     else { // object.method(...)
-                                        now.Begin = Code.Substring(sta + 1, end + 1);
+                                        now.Begin = Code.substring(sta + 1, end + 1);
                                     }
                                 }
                                 else { // object.property
-                                    now.Begin = Code.Substring(sta + 1, end + 1);
+                                    now.Begin = Code.substring(sta + 1, end + 1);
                                 }
                             }
                             else {
-                                now.Begin = Code.Substring(sta + 1, end + 1);
+                                now.Begin = Code.substring(sta + 1, end + 1);
                             }
                         }
                     }
@@ -543,13 +548,13 @@ namespace Razor
                     { // rule 2 : @(expression) (mind the "({})")
                       // ( {...} ) not need to split
                         end = pos[tempIndex];
-                        now.Begin = Code.Substring(tempIndex, end + 1); // (expression)
+                        now.Begin = Code.substring(tempIndex, end + 1); // (expression)
                     }
                     else if (tempChar == '{')
                     { // rule 4 : @{JS Code}
                       // {...} not need to split
                         end = pos[tempIndex];
-                        now.Begin = Code.Substring(tempIndex, end + 1);
+                        now.Begin = Code.substring(tempIndex, end + 1);
                     }
                     else {
                         throw new Exception("Syntax Error.");
@@ -578,7 +583,7 @@ namespace Razor
                 {
                     end = Math.Min(end, tempIndex2 - 1);
                 }
-                now.Begin = Code.Substring(sta, end + 1);
+                now.Begin = Code.substring(sta, end + 1);
                 root.AppendChild(now);
             }
             return end;
